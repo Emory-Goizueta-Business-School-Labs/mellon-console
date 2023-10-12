@@ -5,11 +5,11 @@ using MellonConsole;
 
 Console.WriteLine("Hello, World!");
 
-string clientId = "";
-string clientSecret = "";
-string audience = "";
-string tokenEndpoint = "";
-string apiEndpoint = "";
+string clientId = Secrets.ClientId;
+string clientSecret = Secrets.ClientSecret;
+string audience = Secrets.Audience;
+string tokenEndpoint = Secrets.TokenEndpoint;
+string apiBaseUrl = Secrets.ApiBaseUrl;
 
 using (HttpClient client = new HttpClient())
 {
@@ -33,7 +33,7 @@ using (HttpClient client = new HttpClient())
 
     Console.WriteLine("Getting To Dos.");
 
-    List<ToDo>? toDos = await client.GetFromJsonAsync<List<ToDo>>($"{apiEndpoint}/api/ToDos");
+    List<ToDo>? toDos = await client.GetFromJsonAsync<List<ToDo>>($"{apiBaseUrl}/api/ToDos");
 
     if (toDos is null || !toDos.Any())
     {
@@ -51,14 +51,14 @@ using (HttpClient client = new HttpClient())
 
     foreach (ToDo toDo in toDosToDelete)
     {
-        responseTasks.Add(client.DeleteAsync($"{apiEndpoint}/api/Todos/{toDo.Id}"));
+        responseTasks.Add(client.DeleteAsync($"{apiBaseUrl}/api/Todos/{toDo.Id}"));
     }
 
     Task.WaitAll(responseTasks.ToArray());
 
     Console.WriteLine("Completed To Dos deleted.");
 
-    await client.PostAsJsonAsync($"{apiEndpoint}/api/ToDos", new ToDo()
+    await client.PostAsJsonAsync($"{apiBaseUrl}/api/ToDos", new ToDo()
     {
         Text = $"Completed To Dos cleared: {DateTime.UtcNow.ToString()}",
         IsDone = true
